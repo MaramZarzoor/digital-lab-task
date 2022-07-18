@@ -1,0 +1,123 @@
+
+<div class="search">
+  <form #form="ngForm" [formGroup]="searchForm" (submit)="onSubmit()">
+    <input formControlName="city" type="text" placeholder="{{'searchCity' | translate }}" name="city">
+  </form>
+</div>
+<div style="display: flex; justify-content: center;">
+  <div class="container">
+    <div>
+      <div class="weather-data" *ngIf="isSunSet" style="background-image: url('../../assets/morning.png'); background-repeat: no-repeat">
+        <div class="location" style="color: black">{{result?.name}}</div>
+        <div class="temperature" style="color: black">{{result?.main?.temp | kelvinToCelsius}}°C</div>
+      </div>
+      <div class="weather-data" *ngIf="!isSunSet" style="background-image: url('../../assets/night.png'); background-repeat: no-repeat">
+        <div class="location" style="color: #FFFFFF">{{result?.name}}</div>
+        <div class="temperature"style="color: #FFFFFF">{{result?.main?.temp | kelvinToCelsius}}°C</div>
+      </div>
+    </div>
+
+
+    <div class="lower-data">
+      <div id="cloud">
+        <img src="{{result?.weather[0]?.icon | weatherIcon}}"/>
+      </div>
+      <div class="more-info-container">
+        <div class="info-block">
+          <div class="info-block-label">
+            <img src="../../assets/min.png">
+            <span>{{'min' | translate}}</span>
+          </div>
+          <div class="info-block-value">
+            {{result?.main?.temp_min | kelvinToCelsius}}°C
+          </div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-block-label">
+            <img src="../../assets/max.png">
+            <span>{{'max' | translate}}</span>
+          </div>
+          <div class="info-block-value">
+            {{result?.main?.temp_max | kelvinToCelsius}}°C
+          </div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-block-label">
+            <img src="../../assets/humidity.png">
+            <span>{{'humidity' | translate}}</span>
+          </div>
+          <div class="info-block-value">
+            {{result?.main?.humidity}} %
+          </div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-block-label">
+            <img src="../../assets/wind.png">
+            <span>{{'wind' | translate}}</span>
+          </div>
+          <div class="info-block-value">
+            {{result?.wind?.speed}}  km/h
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="display: flex; justify-content: center;">
+<dx-chart
+  id="chart"
+  title="{{'temperatureForNextDays' | translate}}"
+  [dataSource]="resultDays"
+>
+  <dxo-legend [visible]="false"></dxo-legend>
+  <dxi-series type="bar"></dxi-series>
+  <dxo-argument-axis>
+    <dxo-label [customizeText]="customizeText">
+      <dxo-format type="decimal"></dxo-format>
+    </dxo-label>
+  </dxo-argument-axis>
+</dx-chart>
+</div>
+<div style="display: flex; justify-content: center;">
+  <dx-chart
+    id="chart"
+    [dataSource]="resultDaysHumidity"
+    title="{{'humidityForNextDays' | translate}}">
+    <dxo-size [height]="420"></dxo-size>
+    <dxi-series
+      type="spline"
+    ></dxi-series>
+    <dxo-legend [visible]="false"></dxo-legend>
+    <dxo-export [enabled]="true"></dxo-export>
+    <dxo-argument-axis type="discrete">
+      <dxo-grid [visible]="true" [opacity]="0.5"></dxo-grid>
+      <dxo-label [customizeText]="customizeText">
+      </dxo-label>
+    </dxo-argument-axis>
+    <dxo-loading-indicator [enabled]="true"></dxo-loading-indicator>
+  </dx-chart>
+</div>
+<div style="display: flex; justify-content: center;" >
+  <dx-chart
+    id="chart"
+    title="{{'windForNextDays' | translate}}"
+    palette="Harmony Light"
+    [dataSource]="resultDaysWind"
+  >
+    <dxi-series></dxi-series>
+    <dxo-margin [bottom]="20"></dxo-margin>
+    <dxo-argument-axis [valueMarginsEnabled]="false">
+      <dxo-label [customizeText]="customizeText">
+      </dxo-label>
+    </dxo-argument-axis>
+    <dxo-export [enabled]="true"></dxo-export>
+    <dxo-legend verticalAlignment="bottom" horizontalAlignment="center">
+    </dxo-legend>
+  </dx-chart>
+</div>
+<a *ngFor="let item of languages"(click)="useLanguage(item.lang)">
+  <label>{{item.label}}</label>
+</a>
